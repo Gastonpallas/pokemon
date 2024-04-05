@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {delay, Observable, of, tap} from "rxjs";
+import { delay, Observable, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +9,8 @@ export class AuthService {
   isLoggedIn: boolean = false;
   redirectUrl: string;
 
-  login(name : string, password: string) : Observable<boolean>{
-    const isLoggedIn = (name == "pikachu" && password == "pikachu" )
+  login(name: string, password: string): Observable<boolean> {
+    const isLoggedIn = (name == 'pikachu' && password == 'pikachu');
 
     return of(isLoggedIn).pipe(
         delay(1000),
@@ -18,8 +18,7 @@ export class AuthService {
     );
   }
 
-  logout(){
+  logout() {
     this.isLoggedIn = false;
   }
-
 }

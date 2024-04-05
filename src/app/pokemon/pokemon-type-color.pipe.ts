@@ -1,9 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'pokemonTypeColor'})
+@Pipe({
+  name: 'pokemonTypeColor',
+  standalone: true
+})
 export class PokemonTypeColorPipe implements PipeTransform {
-  transform(type: string): string {
 
+  transform(type: string): string {
     let color: string;
 
     switch (type) {
@@ -46,6 +49,6 @@ export class PokemonTypeColorPipe implements PipeTransform {
     }
 
     return 'chip ' + color;
-
   }
+
 }

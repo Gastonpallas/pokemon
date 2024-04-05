@@ -1,42 +1,60 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {Pokemon} from "../pokemon";
-import {POKEMONS} from "../mock-pokemon-list";
-import {PokemonService} from "../pokemon.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Pokemon } from '../pokemon';
+import { PokemonService } from '../pokemon.service';
+import { PokemonTypeColorPipe } from '../pokemon-type-color.pipe';
+import { LoaderComponent } from '../loader/loader.component';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-detail-pokemon',
-  templateUrl: './detail-pokemon.component.html',
-  styles: [
-  ]
+    selector: 'app-detail-pokemon',
+    templateUrl: './detail-pokemon.component.html',
+    standalone: true,
+    imports: [NgIf, NgFor, LoaderComponent, DatePipe, PokemonTypeColorPipe]
 })
-export class DetailPokemonComponent implements OnInit{
-  pokemon : Pokemon | undefined ;
+export class DetailPokemonComponent implements OnInit {
 
-  constructor(private route : ActivatedRoute,
-              private router : Router,
-              private pokemonService : PokemonService) {}
+    pokemonList: Pokemon[];
+    pokemon: Pokemon|undefined;
 
-  ngOnInit(): void {
-    const pokemonId : string | null = this.route.snapshot.paramMap.get('id');
-    if(pokemonId){
-      this.pokemonService.getPokemonById(+pokemonId).subscribe(
-          pokemon => this.pokemon = pokemon )
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private pokemonService: PokemonService,
+        private title: Title
+    ) { }
+
+    ngOnInit() {
+        const pokemonId: string|null = this.route.snapshot.paramMap.get('id');
+        if(pokemonId) {
+            this.pokemonService.getPokemonById(+pokemonId).subscribe(pokemon => {
+                this.pokemon = pokemon;
+                this.initTitle(pokemon)
+            });
+        }
     }
-  }
 
-  goToEditPokemon(pokemon : Pokemon){
-    this.router.navigate(['edit/pokemon', pokemon.id])
+    initTitle(pokemon: Pokemon|undefined) {
+        if(!pokemon) {
+            this.title.setTitle('Pokemon not found');
+            return;
+        }
 
-  }
-  goToPokemonList() {
-    this.router.navigate(['pokemons'])
-  }
+        this.title.setTitle(pokemon.name);
+    }
 
-  deletePokemon(pokemon : Pokemon){
-    this.pokemonService.deletePokemon(pokemon.id)
-        .subscribe(() => this.goToPokemonList())
-  }
+    deletePokemon(pokemon: Pokemon) {
+        this.pokemonService.deletePokemonById(pokemon.id)
+            .subscribe(() => this.goToPokemonList());
+    }
 
+    goToPokemonList() {
+        this.router.navigate(['/pokemons']);
+    }
+
+    goToEditPokemon(pokemon: Pokemon) {
+        this.router.navigate(['/edit/pokemon', pokemon.id]);
+    }
 
 }
